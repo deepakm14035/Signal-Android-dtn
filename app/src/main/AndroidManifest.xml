@@ -92,6 +92,8 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
+    <uses-permission android:name="android.permission.messagingproviderreadperm"></uses-permission>
+    <uses-permission android:name="android.permission.messagingproviderwriteperm"></uses-permission>
 
     <application android:name=".ApplicationContext"
                  android:icon="@mipmap/ic_launcher"
@@ -937,4 +939,7 @@
     <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
 </application>
+    <queries>
+        <provider android:authorities="com.example.contentprovidertest.providers" />
+    </queries>
 </manifest>

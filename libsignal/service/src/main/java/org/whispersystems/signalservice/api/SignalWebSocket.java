@@ -7,12 +7,17 @@ import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState;
 import org.whispersystems.signalservice.api.websocket.WebSocketFactory;
 import org.whispersystems.signalservice.api.websocket.WebSocketUnavailableException;
 import org.whispersystems.signalservice.internal.websocket.WebSocketConnection;
+import org.whispersystems.signalservice.internal.websocket.WebSocketProtos;
 import org.whispersystems.signalservice.internal.websocket.WebSocketProtos.WebSocketRequestMessage;
 import org.whispersystems.signalservice.internal.websocket.WebSocketProtos.WebSocketResponseMessage;
 import org.whispersystems.signalservice.internal.websocket.WebsocketResponse;
 import org.whispersystems.util.Base64;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
@@ -22,6 +27,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import okio.ByteString;
 
 /**
  * Provide a general interface to the WebSocket for making requests and reading messages sent by the server.
@@ -42,15 +48,17 @@ public final class SignalWebSocket {
   private       WebSocketConnection                       unidentifiedWebSocket;
   private final BehaviorSubject<WebSocketConnectionState> unidentifiedWebSocketState;
   private       CompositeDisposable                       unidentifiedWebSocketStateDisposable;
+  //private       Context                                   context;//deepak
 
   private boolean canConnect;
 
-  public SignalWebSocket(WebSocketFactory webSocketFactory) {
+  public SignalWebSocket(WebSocketFactory webSocketFactory/*, Context context*/) {
     this.webSocketFactory                     = webSocketFactory;
     this.webSocketState                       = BehaviorSubject.createDefault(WebSocketConnectionState.DISCONNECTED);
     this.unidentifiedWebSocketState           = BehaviorSubject.createDefault(WebSocketConnectionState.DISCONNECTED);
     this.webSocketStateDisposable             = new CompositeDisposable();
     this.unidentifiedWebSocketStateDisposable = new CompositeDisposable();
+    //this.context                              = context;//deepak
   }
 
   /**
@@ -209,10 +217,62 @@ public final class SignalWebSocket {
                                            return Single.just(r);
                                          });
       } catch (IOException e) {
-        return Single.error(e);
+        WebsocketResponse response = null;
+        try {
+          Thread1 thread1 = new Thread1(message);
+          thread1.start();
+          thread1.join();
+          response = thread1.getResponse();
+        }catch(Exception ex){
+          ex.printStackTrace();
+        }
+        return Single.just(response);
       }
     } else {
+
       return request(requestMessage);
+    }
+  }
+
+  class Thread1  extends Thread {
+    WebSocketProtos.WebSocketMessage message;
+    WebsocketResponse response;
+
+    public WebsocketResponse getResponse(){
+      return response;
+    }
+    public Thread1(WebSocketRequestMessage message){
+      WebSocketProtos.WebSocketMessage messageToSend = WebSocketProtos.WebSocketMessage.newBuilder()
+                                                                                 .setType(WebSocketProtos.WebSocketMessage.Type.REQUEST)
+                                                                                 .setRequest(message)
+                                                                                 .build();
+      this.message = messageToSend;
+    }
+
+    public void run() {
+      Socket socket;
+      try {
+        socket = new Socket("127.0.0.1", 4444);
+        PrintWriter    output = new PrintWriter(socket.getOutputStream());
+        BufferedReader input  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        //Toast.makeText(MainActivity.this, "sending message to socket", Toast.LENGTH_SHORT);
+        Log.d("deepakSocket", "sending message to socket");
+        output.write(message.toByteArray().toString().toCharArray());
+        output.flush();
+        //new Thread(new Thread2()).start();
+        output.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        Log.e("deepakSocket", e.getMessage());
+        //Toast.makeText(MainActivity.this, "error sending message: "+e.getMessage(), Toast.LENGTH_SHORT);
+      }
+      response = new WebsocketResponse(message.getResponse().getStatus(),
+                            new String(message.getResponse().getBody().toByteArray()),
+                            message.getResponse().getHeadersList(),
+                            !true);
+      Log.d("deepakSocket", "success sending message to socket");
+      //Toast.makeText(MainActivity.this, "success sending message to socket", Toast.LENGTH_SHORT);
     }
   }
 
