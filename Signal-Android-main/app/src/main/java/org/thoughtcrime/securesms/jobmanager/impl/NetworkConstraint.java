@@ -5,6 +5,7 @@ import android.app.job.JobInfo;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import org.thoughtcrime.securesms.jobmanager.Constraint;
 
 public class NetworkConstraint implements Constraint {
+  static final Uri CONTENT_URL = Uri.parse("content://com.example.contentprovidertest.providers/messages");
 
   public static final String KEY = "NetworkConstraint";
 
@@ -46,8 +48,12 @@ public class NetworkConstraint implements Constraint {
   public static boolean isMet(@NonNull Context context) {
     ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo         activeNetworkInfo   = connectivityManager.getActiveNetworkInfo();
-
-    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    boolean isDTNAvailable=false;
+    try{
+      context.getContentResolver().query(CONTENT_URL, null, null, null, null);
+      isDTNAvailable=true;
+    }catch(Exception e){}
+    return (activeNetworkInfo != null && activeNetworkInfo.isConnected()) || isDTNAvailable;
   }
 
   public static final class Factory implements Constraint.Factory<NetworkConstraint> {

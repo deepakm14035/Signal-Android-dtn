@@ -14,7 +14,7 @@ public class WebsocketResponse {
   private final Map<String, String> headers;
   private final boolean             unidentified;
 
-  WebsocketResponse(int status, String body, List<String> headers, boolean unidentified) {
+  public WebsocketResponse(int status, String body, List<String> headers, boolean unidentified) {
     this.status       = status;
     this.body         = body;
     this.headers      = parseHeaders(headers);
