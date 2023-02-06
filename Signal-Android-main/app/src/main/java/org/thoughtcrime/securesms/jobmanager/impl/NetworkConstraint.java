@@ -52,7 +52,9 @@ public class NetworkConstraint implements Constraint {
     try{
       context.getContentResolver().query(CONTENT_URL, null, null, null, null);
       isDTNAvailable=true;
-    }catch(Exception e){}
+    }catch(Exception e){
+      e.printStackTrace();
+    }
     return (activeNetworkInfo != null && activeNetworkInfo.isConnected()) || isDTNAvailable;
   }
 

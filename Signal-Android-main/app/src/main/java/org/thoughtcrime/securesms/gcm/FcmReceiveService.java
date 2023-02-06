@@ -36,7 +36,7 @@ public class FcmReceiveService extends FirebaseMessagingService {
                              remoteMessage.getPriority(),
                              remoteMessage.getOriginalPriority(),
                              NetworkUtil.getNetworkStatus(this)));
-
+//deepak
     String registrationChallenge = remoteMessage.getData().get("challenge");
     String rateLimitChallenge    = remoteMessage.getData().get("rateLimitChallenge");
 

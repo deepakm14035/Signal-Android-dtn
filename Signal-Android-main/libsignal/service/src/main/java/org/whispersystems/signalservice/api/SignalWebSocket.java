@@ -216,7 +216,7 @@ public final class SignalWebSocket {
                                            return Single.just(r);
                                          });
       } catch (IOException e) {
-        WebsocketResponse response = null;
+        /*WebsocketResponse response = null;
         try {
           Thread1 thread1 = new Thread1(message);
           thread1.start();
@@ -225,13 +225,17 @@ public final class SignalWebSocket {
         }catch(Exception ex){
           ex.printStackTrace();
         }
-        return Single.just(response);
-      }
-    } else {
+        return Single.just(response);*/
 
-      return request(requestMessage);
+        if(SignalServiceMessageSender.CommunicationProtocol != null){
+          SignalServiceMessageSender.CommunicationProtocol.SendData(message.toByteArray());
+        }
+
+      }
     }
+    return request(requestMessage);
   }
+/*
 
   private class Thread1  extends Thread {
     WebSocketProtos.WebSocketMessage message;
@@ -275,6 +279,7 @@ public final class SignalWebSocket {
       //Toast.makeText(MainActivity.this, "success sending message to socket", Toast.LENGTH_SHORT);
     }
   }
+*/
 
   /**
    * <p>

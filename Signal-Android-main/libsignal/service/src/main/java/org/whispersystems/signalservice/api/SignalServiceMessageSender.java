@@ -80,6 +80,7 @@ import org.whispersystems.signalservice.api.services.AttachmentService;
 import org.whispersystems.signalservice.api.services.MessagingService;
 import org.whispersystems.signalservice.api.util.AttachmentPointerUtil;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
+import org.whispersystems.signalservice.api.util.ICommunicationProtocol;
 import org.whispersystems.signalservice.api.util.Preconditions;
 import org.whispersystems.signalservice.api.util.Uint64RangeException;
 import org.whispersystems.signalservice.api.util.Uint64Util;
@@ -172,6 +173,8 @@ public class SignalServiceMessageSender {
 
   private final ExecutorService executor;
   private final long            maxEnvelopeSize;
+
+  public static ICommunicationProtocol CommunicationProtocol;//deepak
 
   public SignalServiceMessageSender(SignalServiceConfiguration urls,
                                     CredentialsProvider credentialsProvider,
@@ -375,11 +378,12 @@ public class SignalServiceMessageSender {
                                            SignalServiceDataMessage         message,
                                            IndividualSendEvents             sendEvents,
                                            boolean                          urgent,
-                                           boolean                          includePniSignature)
+                                           boolean                          includePniSignature,
+                                           ICommunicationProtocol           communicationProtocol)//deepak
       throws UntrustedIdentityException, IOException
   {
     Log.d(TAG, "[" + message.getTimestamp() + "] Sending a data message.");
-
+    CommunicationProtocol = communicationProtocol;//deepak
     Content content = createMessageContent(message);
 
     if (includePniSignature) {

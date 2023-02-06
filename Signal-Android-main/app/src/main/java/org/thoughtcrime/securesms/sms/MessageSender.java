@@ -130,7 +130,7 @@ public class MessageSender {
 
     SignalLocalMetrics.IndividualMessageSend.onInsertedIntoDatabase(messageId, metricId);
 
-    sendTextMessage(context, recipient, forceSms, keyExchange, messageId);
+    sendTextMessage(context, recipient, forceSms, keyExchange, messageId);//deepak
     onMessageSent();
     SignalDatabase.threads().update(threadId, true);
 
@@ -580,14 +580,14 @@ public class MessageSender {
     if (isLocalSelfSend(context, recipient, forceSms)) {
       sendLocalTextSelf(context, messageId);
     } else if (!forceSms && isPushTextSend(context, recipient, keyExchange)) {
-      sendTextPush(recipient, messageId);
+      sendTextPush(recipient, messageId, context);//deepak
     } else {
       sendSms(recipient, messageId);
     }
   }
-
-  private static void sendTextPush(Recipient recipient, long messageId) {
-    ApplicationDependencies.getJobManager().add(new PushTextSendJob(messageId, recipient));
+  //deepak
+  private static void sendTextPush(Recipient recipient, long messageId, Context context) {
+    ApplicationDependencies.getJobManager().add(new PushTextSendJob(messageId, recipient, context));
   }
 
   private static void sendMediaPush(Context context, Recipient recipient, long messageId, @NonNull Collection<String> uploadJobIds) {

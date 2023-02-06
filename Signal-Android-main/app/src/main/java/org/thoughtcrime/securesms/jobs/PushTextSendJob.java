@@ -1,5 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import org.signal.core.util.logging.Log;
@@ -23,6 +25,7 @@ import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.transport.InsecureFallbackApprovalException;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
+import org.thoughtcrime.securesms.util.DTNCommunicationProtocol;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
@@ -35,6 +38,7 @@ import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.ProofRequiredException;
 import org.whispersystems.signalservice.api.push.exceptions.ServerRejectedException;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
+import org.whispersystems.signalservice.api.util.ICommunicationProtocol;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -48,8 +52,8 @@ public class PushTextSendJob extends PushSendJob {
   private static final String KEY_MESSAGE_ID = "message_id";
 
   private final long messageId;
-
-  public PushTextSendJob(long messageId, @NonNull Recipient recipient) {
+//deepak
+  public PushTextSendJob(long messageId, @NonNull Recipient recipient, Context context) {
     this(constructParameters(recipient, false), messageId);
   }
 
@@ -198,7 +202,8 @@ public class PushTextSendJob extends PushSendJob {
         return syncAccess.isPresent();
       } else {
         SignalLocalMetrics.IndividualMessageSend.onDeliveryStarted(messageId);
-        SendMessageResult result = messageSender.sendDataMessage(address, unidentifiedAccess, ContentHint.RESENDABLE, textSecureMessage, new MetricEventListener(messageId), true, messageRecipient.needsPniSignature());
+        ICommunicationProtocol communicationProtocol = new DTNCommunicationProtocol(context.getPackageName(), context);
+        SendMessageResult result = messageSender.sendDataMessage(address, unidentifiedAccess, ContentHint.RESENDABLE, textSecureMessage, new MetricEventListener(messageId), true, messageRecipient.needsPniSignature(), communicationProtocol);//deepak
 
         SignalDatabase.messageLog().insertIfPossible(messageRecipient.getId(), message.getDateSent(), result, ContentHint.RESENDABLE, new MessageId(messageId, false), true);
 
