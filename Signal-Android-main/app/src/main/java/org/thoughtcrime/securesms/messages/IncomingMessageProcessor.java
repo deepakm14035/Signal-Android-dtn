@@ -80,7 +80,7 @@ public class IncomingMessageProcessor {
      * @return The id of the {@link PushDecryptMessageJob} that was scheduled to process the message, if
      *         one was created. Otherwise null.
      */
-    public @Nullable String processEnvelope(@NonNull SignalServiceEnvelope envelope) {
+    public @Nullable String processEnvelope(@NonNull SignalServiceEnvelope envelope) {//deepak new 3
       if (envelope.hasSourceUuid()) {
         Recipient.externalPush(envelope.getSourceAddress());
       }
@@ -89,7 +89,7 @@ public class IncomingMessageProcessor {
         processReceipt(envelope);
         return null;
       } else if (envelope.isPreKeySignalMessage() || envelope.isSignalMessage() || envelope.isUnidentifiedSender() || envelope.isPlaintextContent()) {
-        return processMessage(envelope);
+        return processMessage(envelope);//deepak new 4
       } else {
         Log.w(TAG, "Received envelope of unknown type: " + envelope.getType());
         return null;
@@ -100,7 +100,7 @@ public class IncomingMessageProcessor {
       return processMessageDeferred(envelope);
     }
 
-    private @Nullable String processMessageDeferred(@NonNull SignalServiceEnvelope envelope) {
+    private @Nullable String processMessageDeferred(@NonNull SignalServiceEnvelope envelope) {//deepak new 5
       Job job = new PushDecryptMessageJob(context, envelope);
       jobManager.add(job);
       return job.getId();

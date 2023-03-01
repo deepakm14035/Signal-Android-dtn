@@ -30,7 +30,7 @@ public class RestStrategy extends MessageRetrievalStrategy {
 
   @WorkerThread
   @Override
-  public boolean execute(long timeout) {
+  public boolean execute(long timeout) {//deepak new 1
     long                    startTime     = System.currentTimeMillis();
     JobManager              jobManager    = ApplicationDependencies.getJobManager();
     QueueFindingJobListener queueListener = new QueueFindingJobListener();
@@ -86,7 +86,7 @@ public class RestStrategy extends MessageRetrievalStrategy {
 
     receiver.retrieveMessages(Stories.isFeatureEnabled(), envelope -> {
       Log.i(TAG, "Retrieved an envelope." + timeSuffix(startTime));
-      String jobId = processor.processEnvelope(envelope);
+      String jobId = processor.processEnvelope(envelope);//deepak new 2
 
       if (jobId != null) {
         jobCount.incrementAndGet();

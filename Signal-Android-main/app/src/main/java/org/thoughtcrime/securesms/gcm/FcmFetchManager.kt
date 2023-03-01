@@ -96,7 +96,7 @@ object FcmFetchManager {
   }
 
   @JvmStatic
-  fun retrieveMessages(context: Context) {
+  fun retrieveMessages(context: Context) {//deepak new
     val success = ApplicationDependencies.getBackgroundMessageRetriever().retrieveMessages(context, RestStrategy(), RestStrategy())
 
     if (success) {

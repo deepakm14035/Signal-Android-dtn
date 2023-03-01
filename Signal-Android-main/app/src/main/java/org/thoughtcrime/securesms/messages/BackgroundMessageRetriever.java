@@ -80,7 +80,7 @@ public class BackgroundMessageRetriever {
           }
 
           Log.i(TAG, "Performing normal message fetch.");
-          return executeBackgroundRetrieval(context, startTime, strategies);
+          return executeBackgroundRetrieval(context, startTime, strategies);//deepak new
         } finally {
           WakeLockUtil.release(wakeLock, WAKE_LOCK_TAG);
           ACTIVE_LOCK.release();
@@ -96,7 +96,7 @@ public class BackgroundMessageRetriever {
       return () -> {};
     }
   }
-
+//deepak new
   private boolean executeBackgroundRetrieval(@NonNull Context context, long startTime, @NonNull MessageRetrievalStrategy[] strategies) {
     boolean success = false;
 

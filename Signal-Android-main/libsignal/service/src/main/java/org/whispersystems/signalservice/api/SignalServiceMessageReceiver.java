@@ -197,7 +197,7 @@ public class SignalServiceMessageReceiver {
 
   public List<SignalServiceEnvelope> retrieveMessages(boolean allowStories, MessageReceivedCallback callback)
       throws IOException
-  {
+  {//deepak new 6
     List<SignalServiceEnvelope> results       = new LinkedList<>();
     SignalServiceMessagesResult messageResult = socket.getMessages(allowStories);
 
