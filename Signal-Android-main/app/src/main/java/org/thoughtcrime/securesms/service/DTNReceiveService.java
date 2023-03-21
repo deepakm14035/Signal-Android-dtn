@@ -32,6 +32,9 @@ public class DTNReceiveService extends IntentService {
        if (ACTION_RECV.equals(action)) {
          final String param1 = intent.getStringExtra(Intent.EXTRA_TEXT);
          handleActionFoo(param1);
+
+         //deepak: if data is for registration, skip from welcome page to home page (showing contact list and messages)
+
        }
      }
    }

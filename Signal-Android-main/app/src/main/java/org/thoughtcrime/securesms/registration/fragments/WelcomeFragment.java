@@ -22,6 +22,8 @@ import androidx.navigation.ActivityNavigator;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
@@ -29,18 +31,27 @@ import org.greenrobot.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.devicetransfer.DeviceToDeviceTransferService;
 import org.signal.devicetransfer.TransferStatus;
+import org.signal.libsignal.protocol.InvalidKeyException;
 import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.crypto.DDDKeys;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.registration.viewmodel.RegistrationViewModel;
 import org.thoughtcrime.securesms.util.BackupUtil;
 import org.thoughtcrime.securesms.util.CommunicationActions;
+import org.thoughtcrime.securesms.util.DTNCommunicationProtocol;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.navigation.SafeNavigation;
 import org.thoughtcrime.securesms.util.views.CircularProgressMaterialButton;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Optional;
 
 import static org.thoughtcrime.securesms.registration.fragments.RegistrationViewDelegate.setDebugLogSubmitMultiTapView;
@@ -179,6 +190,26 @@ public final class WelcomeFragment extends LoggingFragment {
 
       if (backup == null) {
         Log.i(TAG, "Skipping backup. No backup found, or no permission to look.");
+        //deepak: generate keys and store in file
+        try {
+          DDDKeys dddKeys = new DDDKeys();
+          String directory = context.getApplicationInfo().dataDir;
+          dddKeys.generatePublicKeysJsonFile(directory+"/DDD/keys/publickeys.json");
+          dddKeys.generatePrivateKeysJsonFile(directory+"/DDD/keys/privatekeys.json");
+          DTNCommunicationProtocol protocol = new DTNCommunicationProtocol(context.getPackageName(), context);
+          ObjectMapper             mapper   = new ObjectMapper();
+          ObjectNode                     rootNode = mapper.createObjectNode();
+          rootNode.put("data_type", "registration");
+          rootNode.put("data", getFileContents(directory+"/DDD/keys/publickeys.json"));
+          protocol.SendData(rootNode.toPrettyString().getBytes());
+        } catch (InvalidKeyException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        //populate contact list
+
+        SignalStore.account().setE164("2345");
         SafeNavigation.safeNavigate(NavHostFragment.findNavController(this),
                                     WelcomeFragmentDirections.actionSkipRestore());
       } else {
@@ -186,6 +217,31 @@ public final class WelcomeFragment extends LoggingFragment {
                                     WelcomeFragmentDirections.actionRestore());
       }
     });
+  }
+
+  private String convertStreamToString(InputStream is) throws Exception {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    StringBuilder  sb     = new StringBuilder();
+    String         line   = null;
+    while ((line = reader.readLine()) != null) {
+      sb.append(line).append("\n");
+    }
+    reader.close();
+    return sb.toString();
+  }
+
+  private String getFileContents(String location){
+    try{
+      File              fl  = new File(location);
+      FileInputStream fin = new FileInputStream(fl);
+      String          ret = convertStreamToString(fin);
+      //Make sure you close all streams.
+      fin.close();
+      return ret;
+    }catch (Exception ex){
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   private void gatherInformationAndChooseBackup(@NonNull View view) {
