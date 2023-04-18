@@ -4,8 +4,14 @@ package org.thoughtcrime.securesms.crypto;
 * Author: Deepak
 *
 * */
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.provider.ContactsContract;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -41,8 +47,9 @@ public class DDDKeys {
   // random private keys
   private IdentityKeyPair randomIdentityKey;
   private ECKeyPair randomECKey;
+  private ContentResolver contentResolver;
 
-  public DDDKeys() {
+  public DDDKeys(ContentResolver resolver) {
     this.preKeyIdOffset = new SecureRandom().nextInt(Medium.MAX_VALUE);
     this.nextSignedPreKeyId = new SecureRandom().nextInt(Medium.MAX_VALUE);
     this.pniPreKeyIdOffset = new SecureRandom().nextInt(Medium.MAX_VALUE);
@@ -55,6 +62,7 @@ public class DDDKeys {
     this.pniSignedPreKey = generateSignedPreKeyRecord(pniIdentityKey, pniNextSignedPreKeyId);
     this.preKeys = generatePreKeyRecords(preKeyIdOffset, 100);
     this.pniPreKeys = generatePreKeyRecords(pniPreKeyIdOffset, 100);
+    this.contentResolver = resolver;
   }
 
   private String bytesToString(byte[] bytes) {
@@ -64,7 +72,7 @@ public class DDDKeys {
   public void generatePublicKeysJsonFile(String fileName) throws InvalidKeyException, IOException {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode rootNode = mapper.createObjectNode();
-
+    rootNode.put("requestType", "register");
     rootNode.put("identityKey", bytesToString(this.identityKey.getPublicKey().serialize()));
     rootNode.put("pniIdentityKey", bytesToString(this.pniIdentityKey.getPublicKey().serialize()));
     rootNode.put("preKeyIdOffset", this.preKeyIdOffset);
@@ -114,8 +122,29 @@ public class DDDKeys {
       arrayNode.add(preKeyNode);
     }
     rootNode.set("pniPreKeys", arrayNode);
+    // contacts
+    String[] contactList = getContactList();
+    arrayNode = mapper.createArrayNode();
+    for(String contact: contactList){
+      arrayNode.add(contact);
+    }
+    rootNode.set("contacts", arrayNode);
     mapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), rootNode);
 
+  }
+
+  private String[] getContactList() {
+    Cursor phones = this.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
+    String[] contactList = new String[phones.getCount()];
+    int i=0;
+    while (phones.moveToNext())
+    {
+      @SuppressLint("Range") String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+      contactList[i] = phoneNumber;
+      i++;
+    }
+    phones.close();
+    return contactList;
   }
 
   public void generatePrivateKeysJsonFile(String fileName)

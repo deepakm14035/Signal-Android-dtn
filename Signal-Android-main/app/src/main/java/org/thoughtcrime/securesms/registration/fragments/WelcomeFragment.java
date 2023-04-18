@@ -192,16 +192,16 @@ public final class WelcomeFragment extends LoggingFragment {
         Log.i(TAG, "Skipping backup. No backup found, or no permission to look.");
         //deepak: generate keys and store in file
         try {
-          DDDKeys dddKeys = new DDDKeys();
+          DDDKeys dddKeys = new DDDKeys(getContext().getContentResolver());
           String directory = context.getApplicationInfo().dataDir;
+          File file = new File(directory+"/DDD/keys");
+          file.mkdirs();
           dddKeys.generatePublicKeysJsonFile(directory+"/DDD/keys/publickeys.json");
           dddKeys.generatePrivateKeysJsonFile(directory+"/DDD/keys/privatekeys.json");
           DTNCommunicationProtocol protocol = new DTNCommunicationProtocol(context.getPackageName(), context);
           ObjectMapper             mapper   = new ObjectMapper();
-          ObjectNode                     rootNode = mapper.createObjectNode();
-          rootNode.put("data_type", "registration");
-          rootNode.put("data", getFileContents(directory+"/DDD/keys/publickeys.json"));
-          protocol.SendData(rootNode.toPrettyString().getBytes());
+          String dataToSend = getFileContents(directory+"/DDD/keys/publickeys.json");
+          protocol.SendData(dataToSend.getBytes());
         } catch (InvalidKeyException e) {
           e.printStackTrace();
         } catch (IOException e) {

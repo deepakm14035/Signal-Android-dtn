@@ -199,7 +199,9 @@ public class SignalServiceMessageReceiver {
       throws IOException
   {//deepak new 6
     List<SignalServiceEnvelope> results       = new LinkedList<>();
-    SignalServiceMessagesResult messageResult = socket.getMessages(allowStories);
+    SignalServiceMessagesResult messageResult;
+
+    messageResult = socket.getMessages(allowStories);
 
     for (SignalServiceEnvelopeEntity entity : messageResult.getEnvelopes()) {
       SignalServiceEnvelope envelope;
