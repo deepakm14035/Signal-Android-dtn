@@ -7,6 +7,7 @@ package org.thoughtcrime.securesms.crypto;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.ContactsContract;
 
 import java.io.File;
@@ -66,7 +67,10 @@ public class DDDKeys {
   }
 
   private String bytesToString(byte[] bytes) {
-    return new String(bytes);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return Base64.getEncoder().encodeToString(bytes);
+    }
+    return null;
   }
 
   public void generatePublicKeysJsonFile(String fileName) throws InvalidKeyException, IOException {
@@ -140,6 +144,8 @@ public class DDDKeys {
     while (phones.moveToNext())
     {
       @SuppressLint("Range") String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+      phoneNumber = phoneNumber.replaceAll("\\s", "");
+      phoneNumber = phoneNumber.replaceAll("-", "");
       contactList[i] = phoneNumber;
       i++;
     }

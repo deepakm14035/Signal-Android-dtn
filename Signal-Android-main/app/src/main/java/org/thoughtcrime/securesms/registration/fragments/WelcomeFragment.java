@@ -210,8 +210,8 @@ public final class WelcomeFragment extends LoggingFragment {
         //populate contact list
 
         SignalStore.account().setE164("2345");
-        SafeNavigation.safeNavigate(NavHostFragment.findNavController(this),
-                                    WelcomeFragmentDirections.actionSkipRestore());
+        //SafeNavigation.safeNavigate(NavHostFragment.findNavController(this),
+        //                            WelcomeFragmentDirections.actionSkipRestore());
       } else {
         SafeNavigation.safeNavigate(NavHostFragment.findNavController(this),
                                     WelcomeFragmentDirections.actionRestore());
