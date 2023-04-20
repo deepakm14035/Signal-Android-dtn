@@ -100,7 +100,7 @@
         android:protectionLevel="normal" />
 
     <queries>
-        <provider android:authorities="com.example.contentprovidertest.providers" />
+        <provider android:authorities="com.ddd.datastore.providers"></provider>
     </queries>
 
     <application

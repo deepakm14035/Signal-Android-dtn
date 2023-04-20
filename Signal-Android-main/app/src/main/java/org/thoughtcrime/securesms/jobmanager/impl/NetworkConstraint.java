@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi;
 import org.thoughtcrime.securesms.jobmanager.Constraint;
 
 public class NetworkConstraint implements Constraint {
-  static final Uri CONTENT_URL = Uri.parse("content://com.example.contentprovidertest.providers/messages");
+  static final Uri CONTENT_URL = Uri.parse("content://com.ddd.datastore.providers/messages");
 
   public static final String KEY = "NetworkConstraint";
 

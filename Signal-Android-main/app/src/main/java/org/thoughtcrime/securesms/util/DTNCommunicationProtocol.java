@@ -15,7 +15,7 @@ import org.whispersystems.signalservice.api.util.ICommunicationProtocol;
 
 public class DTNCommunicationProtocol implements ICommunicationProtocol {
 
-  static final Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
+  static final Uri CONTENT_URL=Uri.parse("content://com.ddd.datastore.providers/messages");
 
   private String packageName;
   private ContentResolver contentResolver;
