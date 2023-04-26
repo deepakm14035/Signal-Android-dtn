@@ -85,12 +85,12 @@ public class DDDKeys {
     rootNode.put("pniNextSignedPreKeyId", this.pniNextSignedPreKeyId);
 
     // storing random private keys as private keys will remain on the client
-    rootNode.put("identityPrivateKey", bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
-    rootNode.put("pniIdentityPrivateKey", bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
-    rootNode.put("aciSignedPreKeyPrivateKey",
-                 bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
-    rootNode.put("pniSignedPreKeyPrivateKey",
-                 bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
+//    rootNode.put("identityPrivateKey", bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
+//    rootNode.put("pniIdentityPrivateKey", bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
+//    rootNode.put("aciSignedPreKeyPrivateKey",
+//                 bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
+//    rootNode.put("pniSignedPreKeyPrivateKey",
+//                 bytesToString(this.randomIdentityKey.getPrivateKey().serialize()));
 
 
     // aci signed prekey
@@ -112,7 +112,7 @@ public class DDDKeys {
       ObjectNode preKeyNode = mapper.createObjectNode();
       preKeyNode.put("preKeyId", preKey.getId());
       preKeyNode.put("preKeyPublicKey", bytesToString(preKey.getKeyPair().getPublicKey().serialize()));
-      preKeyNode.put("preKeyPrivateKey", bytesToString(this.randomECKey.getPrivateKey().serialize()));
+//      preKeyNode.put("preKeyPrivateKey", bytesToString(this.randomECKey.getPrivateKey().serialize()));
       arrayNode.add(preKeyNode);
     }
     rootNode.set("preKeys", arrayNode);
@@ -122,7 +122,7 @@ public class DDDKeys {
       ObjectNode preKeyNode = mapper.createObjectNode();
       preKeyNode.put("preKeyId", preKey.getId());
       preKeyNode.put("preKeyPublicKey", bytesToString(preKey.getKeyPair().getPublicKey().serialize()));
-      preKeyNode.put("preKeyPrivateKey", bytesToString(this.randomECKey.getPrivateKey().serialize()));
+//      preKeyNode.put("preKeyPrivateKey", bytesToString(this.randomECKey.getPrivateKey().serialize()));
       arrayNode.add(preKeyNode);
     }
     rootNode.set("pniPreKeys", arrayNode);
