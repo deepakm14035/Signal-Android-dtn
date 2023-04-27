@@ -115,7 +115,13 @@
         tools:replace="android:allowBackup">
         <service
             android:name=".DTNReceiveService"
-            android:exported="false"></service>
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.dtn.SEND_DATA" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </service>
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

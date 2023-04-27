@@ -35,6 +35,7 @@ public class DTNReceiveService extends IntentService {
        final String action = intent.getAction();
        if (ACTION_RECV.equals(action)) {
          final String param1 = intent.getStringExtra(Intent.EXTRA_TEXT);
+         Log.d("DDDDebug", param1);
          handleDTNAction(param1);
            try (FileOutputStream stream = new FileOutputStream(getApplicationContext().getApplicationInfo().dataDir + File.separator + "registration_reply.txt", true)) {
                stream.write(param1.getBytes(StandardCharsets.UTF_8));
@@ -54,6 +55,6 @@ public class DTNReceiveService extends IntentService {
     * parameters.
     */
    private void handleDTNAction(String message) {
-     FcmFetchManager.retrieveMessages(ApplicationDependencies.getApplication());
+     //FcmFetchManager.retrieveMessages(ApplicationDependencies.getApplication());
    }
 }
