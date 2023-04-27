@@ -114,7 +114,7 @@
         android:theme="@style/TextSecure.LightTheme"
         tools:replace="android:allowBackup">
         <service
-            android:name=".DTNReceiveService"
+            android:name="org.thoughtcrime.securesms.service.DTNReceiveService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.dtn.SEND_DATA" />
